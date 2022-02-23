@@ -1,0 +1,54 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Action": [
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:CompleteLayerUpload",
+                "ecr:GetAuthorizationToken",
+                "ecr:InitiateLayerUpload",
+                "ecr:PutImage",
+                "ecr:UploadLayerPart",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:BatchGetImage"
+            ],
+            "Resource": ["*"],
+            "Effect": "Allow"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+            ],
+            "Resource": [
+                "arn:aws:logs:ap-northeast-1:xxxxx:log-group:/codebuild/xxxxx/ecs-pipeline",
+                "arn:aws:logs:ap-northeast-1:xxxxx:log-group:/codebuild/xxxxx/ecs-pipeline:*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:PutObject",
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:ListBucket",
+                "s3:GetBucketAcl",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": [
+                "arn:aws:s3:::codepipeline-*",
+                "${source_bucket_arn}",
+                "${source_bucket_arn}/*",
+                "${artifact_s3_buckt_arn}",
+                "${artifact_s3_buckt_arn}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": "ssm:GetParameters",
+            "Resource": "*"
+        }
+    ]
+}

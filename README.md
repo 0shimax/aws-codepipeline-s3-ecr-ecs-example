@@ -1,1 +1,1 @@
-# aws-codepipeline-s3-ecr-ecs-example
+souce files -> S3 -> codebuild -> ecr -> ecs update

@@ -1,0 +1,62 @@
+{
+    "Statement": [
+        {
+            "Action": [
+                "iam:PassRole"
+            ],
+            "Resource": "*",
+            "Effect": "Allow",
+            "Condition": {
+                "StringEqualsIfExists": {
+                    "iam:PassedToService": [
+                        "cloudformation.amazonaws.com",
+                        "elasticbeanstalk.amazonaws.com",
+                        "ec2.amazonaws.com",
+                        "ecs-tasks.amazonaws.com"
+                    ]
+                }
+            }
+        },
+        {
+            "Action": [
+                "s3:*",
+                "s3:Put*",
+                "s3:Get*",
+                "s3:List*"
+            ],
+            "Resource": [
+                "${source_bucket_arn}",
+                "${source_bucket_arn}/*",
+                "${artifact_s3_buckt_arn}",
+                "${artifact_s3_buckt_arn}/*"
+            ],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:DescribeImages"
+            ],
+            "Resource": ["*"],
+            "Effect": "Allow"
+        },
+        {
+            "Action": [
+                "codebuild:BatchGetBuilds",
+                "codebuild:StartBuild"
+            ],
+            "Resource": "*",
+            "Effect": "Allow"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecs:DescribeServices",
+                "ecs:DescribeTaskDefinition",
+                "ecs:RegisterTaskDefinition",
+                "ecs:UpdateService"                
+            ],
+            "Resource": "*"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+version: 0.2
+phases:
+  pre_build:
+    commands:
+      - DEFAULT=`pwd`
+      - IMAGE_URI=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}
+      - aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
+      - chmod -R +x codepipeline
+      - cd codepipeline
+  build:
+    commands:
+      - docker build --build-arg MODEL_PATH=$MODEL_PATH -t $IMAGE_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_URI
+  post_build:
+    commands:
+      - docker push $IMAGE_URI:$IMAGE_TAG
+      - cd $DEFAULT
+      - echo '[{"name":"__INFECTION_CONTAINER_NAME__","imageUri":"__URI_GRCP__"},{"name":"envoy", "imageUri":"public.ecr.aws/appmesh/aws-appmesh-envoy:v1.20.0.1-prod"}]' > ${IMAGE_CONF_FILE_NAME}
+      - sed -ie "s@__INFECTION_CONTAINER_NAME__@${INFECTION_CONTAINER_NAME}@" ${IMAGE_CONF_FILE_NAME}
+      - sed -ie "s@__URI_GRCP__@${IMAGE_URI}:${IMAGE_TAG}@" ${IMAGE_CONF_FILE_NAME}
+artifacts:
+  files:
+    - ${IMAGE_CONF_FILE_NAME}
